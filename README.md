@@ -22,7 +22,7 @@ TODO
 You need to have:
 
 * An active cryptocurrency mining device running [AxeOS](https://www.bitaxe.org/);
-* A [PUSHOVER](https://pushover.net/) account, if you want the notifications.
+* A [PUSHOVER](https://pushover.net/) account, with a defined application API Token.
 
 ## Example
 
