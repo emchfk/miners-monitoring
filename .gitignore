@@ -220,3 +220,6 @@ __marimo__/
 # Application
 .toml
 .service
+
+# Debug
+debug_*

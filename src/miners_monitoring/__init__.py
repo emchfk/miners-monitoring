@@ -1,2 +1,7 @@
+from .config import Settings
+
+
 def main() -> None:
-    print("Hello from miners-monitoring!")
+    # DEBUG:
+    settings = Settings()
+    print(settings)

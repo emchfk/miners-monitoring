@@ -30,32 +30,7 @@ TODO
 
 ## Setting up
 
-### Setting up Python environment
-
-``` bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-### Updating environment
-
-To update/upgrade pip and detect outdated packages, use the following commands:
-
-``` bash
-pip install --upgrade pip
-pip list --outdated
-```
-
-### Setting up application parameters
-
-Rename the file *.toml.example* to *.toml* and update the parameters:
-
-``` bash
 TODO
-```
-
-Never commit this file, it contains extremely private data!
 
 ## Running as service
 
