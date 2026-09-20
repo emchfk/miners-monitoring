@@ -1,3 +1,4 @@
+from ipaddress import IPv4Address
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, ValidationInfo, field_validator
@@ -7,6 +8,7 @@ from miners_monitoring.config import dirs
 DEFAULT_MINER_NAME = "my_miner"
 
 
+# Model for defining miner parameters (miner section.)
 class MinerSettings(BaseModel):
     model_config = ConfigDict(validate_default=True)
 
@@ -14,15 +16,13 @@ class MinerSettings(BaseModel):
     ip: str = "192.168.1.100"
     logs: str = ""
 
-    # TODO : add validation for IP address format, IPV4 format verification
-    # @field_validator("ip")
-    # def validate_ip(cls, v: str) -> str:
-    #     # Simple IP address validation (basic)
-    #     if not v:
-    #         raise ValueError("IP address is required")
-    #     if not v.count(".") == 3:
-    #         raise ValueError("Invalid IP address format")
-    #     return v
+    @field_validator("ip")
+    def validate_ip(cls, v: str) -> str:
+        try:
+            IPv4Address(v)
+        except ValueError as exc:
+            raise ValueError("Invalid IPv4 address format") from exc
+        return v
 
     @field_validator("name")
     def default_name(cls, v: str) -> str:

@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -12,6 +12,7 @@ from tomli_w import dump
 
 from miners_monitoring.config import dirs
 from miners_monitoring.models.miner import MinerSettings
+from miners_monitoring.models.pushover import PushoverSettings
 
 CONFIG_FILE = Path(dirs.user_config_dir) / "config.toml"
 
@@ -21,16 +22,12 @@ def write_config_file(config_file: Path, settings: dict[str, object]) -> None:
     config_file.parent.mkdir(parents=True, exist_ok=True)
     with config_file.open("wb") as file:
         dump(settings, file)
+    print(
+        f"Configuration file written to: {config_file}."
+        "\nEdit the file to change settings, or delete it to reset to defaults."
+    )
 
 
-# Modèle pour la définition des paramètres Pushover (section pushover.)
-# TODO : move to models?
-class PushoverSettings(BaseModel):
-    app_token: str = ""
-    user_token: str = ""
-
-
-# TODO : proposer l'édition des paramètres avec Typer ?
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         toml_file=os.fspath(CONFIG_FILE),
