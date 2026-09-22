@@ -23,7 +23,7 @@ def write_config_file(config_file: Path, settings: dict[str, object]) -> None:
     with config_file.open("wb") as file:
         dump(settings, file)
     print(
-        f"Configuration file written to: {config_file}."
+        f"Configuration file location: {config_file}."
         "\nEdit the file to change settings, or delete it to reset to defaults."
     )
 
