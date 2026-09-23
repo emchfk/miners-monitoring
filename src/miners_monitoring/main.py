@@ -1,6 +1,6 @@
 import asyncio
 
-from miners_monitoring.services.api import get_system_info
+from miners_monitoring.services.api import post_restart
 
 from .settings import Settings
 
@@ -10,11 +10,12 @@ async def _run() -> None:
     settings = Settings()
 
     # DEBUG
-    # Fetch system info for each miner
+    # Fetch system response for each miner
     for miner_name, miner_settings in settings.miners.items():
-        print(f"Fetching system info for miner: {miner_name} ({miner_settings.ip})")
-        system_info = await get_system_info(miner_settings.ip)
-        print(f"System info for {miner_name}: {system_info}")
+        print(f"Miner: {miner_name} ({miner_settings.ip})")
+        # system_response = await get_system_info(miner_settings.ip)
+        system_response = await post_restart(miner_settings.ip)
+        print(f"System response for {miner_name}: {system_response}")
 
 
 def main() -> None:
