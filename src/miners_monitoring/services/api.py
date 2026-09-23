@@ -7,6 +7,7 @@ import httpx
 url_template = "http://{}/api/system/{}"  # Url template for API requests (AxeOS)
 
 Getter = Callable[[str], Awaitable[Any | str]]
+Poster = Callable[[str], Awaitable[Any | str]]
 
 
 # Generic function for asynchronously interacting with the API
@@ -67,7 +68,7 @@ async def post_system_data(ip: str, endpoint: str) -> Any | str:
     return await post_data(url)
 
 
-def make_poster(endpoint: str) -> Getter:
+def make_poster(endpoint: str) -> Poster:
     async def poster(ip: str) -> Any | str:
         return await post_system_data(ip, endpoint)
 
