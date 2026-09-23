@@ -1,4 +1,3 @@
-# import requests --> httpx
 from collections.abc import Awaitable, Callable
 from typing import Any
 
@@ -24,7 +23,7 @@ async def fetch_data(api_url: str) -> Any | str:
             return f"Request Error : {e}"
 
 
-# ---------------- GET ----------------
+# Get functions for specific API endpoints
 async def get_system_data(ip: str, endpoint: str) -> Any | str:
     url = url_template.format(ip, endpoint)
     return await fetch_data(url)
@@ -42,7 +41,7 @@ get_asic_settings_info = make_getter("asic")
 get_system_statistics = make_getter("statistics")
 get_wifi_scan = make_getter("wifi/scan")
 
-# # ---------------- POST ----------------
+# Post functions for specific API endpoints
 # def post_restart(ip: str):
 #     url = url_template.format(ip,"restart")
 #     response = requests.post(url)
@@ -53,7 +52,7 @@ get_wifi_scan = make_getter("wifi/scan")
 #     response = requests.post(url)
 #     return response
 
-# # --------------- PATCH ----------------
+# Patch functions for specific API endpoints
 # def patch_system(ip: str, json_data: dict):
 #     url = url_template.format(ip,"")
 #     response = requests.patch(url, headers={}, json=json_data)
