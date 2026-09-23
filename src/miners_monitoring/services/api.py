@@ -1,30 +1,46 @@
-# AxeOS API
-# https://osmu.wiki/bitaxe/api/
-
 # import requests --> httpx
+from collections.abc import Awaitable, Callable
+from typing import Any
 
-# url_template = "http://{}/api/system/{}"
+import httpx
 
-# # ---------------- GET ----------------
-# def get_system_info(ip: str):
-#     url = url_template.format(ip,"info")
-#     response = requests.get(url)
-#     return response
+url_template = "http://{}/api/system/{}"  # Url template for API requests (AxeOS)
 
-# def get_asic_settings_info(ip: str):
-#     url = url_template.format(ip,"asic")
-#     response = requests.get(url)
-#     return response
+Getter = Callable[[str], Awaitable[Any | str]]
 
-# def get_system_statistics(ip: str):
-#     url = url_template.format(ip,"statistics")
-#     response = requests.get(url)
-#     return response
 
-# def get_wifi_scan(ip: str):
-#     url = url_template.format(ip,"wifi/scan")
-#     response = requests.get(url)
-#     return response
+# Generic function for asynchronously fetching data from the API
+async def fetch_data(api_url: str) -> Any | str:
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(api_url)
+            response.raise_for_status()  # Check if request was successful (status 200-299)
+
+            # Display the JSON content of the response
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            return f"HTTP Error : {e.response.status_code} - {e.response.text}"
+        except httpx.RequestError as e:
+            return f"Request Error : {e}"
+
+
+# ---------------- GET ----------------
+async def get_system_data(ip: str, endpoint: str) -> Any | str:
+    url = url_template.format(ip, endpoint)
+    return await fetch_data(url)
+
+
+def make_getter(endpoint: str) -> Getter:
+    async def getter(ip: str) -> Any | str:
+        return await get_system_data(ip, endpoint)
+
+    return getter
+
+
+get_system_info = make_getter("info")
+get_asic_settings_info = make_getter("asic")
+get_system_statistics = make_getter("statistics")
+get_wifi_scan = make_getter("wifi/scan")
 
 # # ---------------- POST ----------------
 # def post_restart(ip: str):
