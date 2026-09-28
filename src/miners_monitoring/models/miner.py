@@ -40,5 +40,10 @@ class MinerSettings(BaseModel):
         return v
 
 
+class MinerData(BaseModel):
+    tmp: int = 0
+
+
 class Miner(BaseModel):
     settings: MinerSettings = MinerSettings()
+    data: MinerData = MinerData()

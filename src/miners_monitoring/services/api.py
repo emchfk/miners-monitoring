@@ -10,7 +10,7 @@ Getter = Callable[[str], Awaitable[Any | str]]
 Poster = Callable[[str], Awaitable[Any | str]]
 
 
-RequestMethod = Literal["get", "post"]  # TODO : patch
+RequestMethod = Literal["get", "post", "patch"]
 
 
 # Generic function for asynchronously interacting with the API
@@ -21,6 +21,8 @@ async def api_interaction(api_url: str, method: RequestMethod = "get") -> Any | 
                 response = await client.get(api_url)
             elif method == "post":
                 response = await client.post(api_url, headers=None, json=None)
+            elif method == "patch":
+                response = await client.patch(api_url, headers=None, json=None)
             else:
                 raise ValueError(f"Unsupported HTTP method: {method}")
 
