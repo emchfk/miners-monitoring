@@ -45,5 +45,15 @@ class MinerData(BaseModel):
 
 
 class Miner(BaseModel):
+    name: str = DEFAULT_MINER_NAME
     settings: MinerSettings = MinerSettings()
     data: MinerData = MinerData()
+
+    # DEBUGGING
+    def print_name(self) -> str:
+        return f"Miner: {self.settings.name}"
+
+    def print_ip(self) -> str:
+        return f"Miner: {self.settings.ip}"
+
+    # END DEBUGGING

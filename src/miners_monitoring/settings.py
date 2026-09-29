@@ -11,6 +11,7 @@ from pydantic_settings import (
 from tomli_w import dump
 
 from miners_monitoring.config import dirs
+from miners_monitoring.models.functions import CallSettings
 from miners_monitoring.models.miner import MinerSettings
 from miners_monitoring.models.pushover import PushoverSettings
 
@@ -35,6 +36,7 @@ class Settings(BaseSettings):
 
     miners: dict[str, MinerSettings] = {"my_miner": MinerSettings()}
     pushover: PushoverSettings = Field(default_factory=PushoverSettings)
+    custom_calls: dict[str, CallSettings] = {"my_custom_call": CallSettings()}
 
     def __init__(self) -> None:
         super().__init__()
