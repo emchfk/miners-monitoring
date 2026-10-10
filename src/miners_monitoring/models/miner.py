@@ -10,6 +10,17 @@ DEFAULT_MINER_NAME = "my_miner"
 
 # Model for defining miner parameters (miner section.)
 class MinerSettings(BaseModel):
+    """Todo.
+
+    Todo more details
+
+    Attributes:
+        model_config (ConfigDict): Configuration for the model.
+        name (str): miner name.
+        ip (str): miner IP address.
+        logs (str): path to the miner logs file.
+    """
+
     model_config = ConfigDict(validate_default=True)
 
     name: str = ""

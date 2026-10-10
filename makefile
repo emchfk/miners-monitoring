@@ -1,4 +1,4 @@
-.PHONY: lint test typecheck fmt all
+.PHONY: lint test typecheck fmt doc all
 
 fmt:
 	uv run ruff format .
@@ -11,5 +11,8 @@ typecheck:
 
 test:
 	uv run pytest
+
+doc:
+	uv run mkdocs build
 
 all: fmt lint typecheck test
