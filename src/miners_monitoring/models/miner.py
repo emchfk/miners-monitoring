@@ -5,7 +5,18 @@ from pydantic import BaseModel, ConfigDict, ValidationInfo, field_validator
 
 from miners_monitoring.config import dirs
 
-DEFAULT_MINER_NAME = "my_miner"
+DEFAULT_MINER_NAME: str = "my_miner"
+"""Default miner name used when no name is provided in the configuration file."""
+DEFAULT_FREQUENCY: int = 525
+"""Default ASIC frequency value used when resetting."""
+DEFAULT_CORE_VOLTAGE: int = 1100
+"""Default core voltage value used when resetting."""
+OVERHEAT_FREQUENCY: int = 400
+"""Frequency value used when the miner is overheating."""
+OVERHEAT_CORE_VOLTAGE: int = 1000
+"""Core voltage value used when the miner is overheating."""
+MINER_METHODS_REGISTER: list[str] = ["print_name", "print_ip"]
+"""List of miner methods that can be called via custom calls."""
 
 
 # Model for defining miner parameters (miner section.)
@@ -52,6 +63,13 @@ class MinerSettings(BaseModel):
 
 
 class MinerData(BaseModel):
+    """Todo.
+
+    Todo details
+
+    Attributes:
+        tmp (int): temporary attribute for debugging purposes.
+    """
     tmp: int = 0
 
 
@@ -71,8 +89,8 @@ class Miner(BaseModel):
     data: MinerData = MinerData()
 
     # DEBUGGING
-    def print_name(self) -> str:
-        return f"Miner: {self.settings.name}"
+    def print_name(self, msg: str) -> str:
+        return f"Miner: {self.settings.name} {msg}"
 
     def print_ip(self) -> str:
         return f"Miner: {self.settings.ip}"

@@ -21,7 +21,7 @@ async def _run() -> None:
         print(f"Custom call: {custom_call_name} ({custom_call_settings.crontab})")
         print(f"Sequence: {custom_call_settings.sequence}")
     for miner in miners:
-        print(miner.print_name())
+        print(miner.print_name("hello"))
         print(miner.print_ip())
         # system_response = await get_system_info(miner.settings.ip)
         # system_response = await post_restart(miner.settings.ip)
