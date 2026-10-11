@@ -12,7 +12,7 @@ DEFAULT_MINER_NAME = "my_miner"
 class MinerSettings(BaseModel):
     """Todo.
 
-    Todo more details
+    Todo details
 
     Attributes:
         model_config (ConfigDict): Configuration for the model.
@@ -56,6 +56,16 @@ class MinerData(BaseModel):
 
 
 class Miner(BaseModel):
+    """Todo.
+
+    Todo details
+
+    Attributes:
+        name (str): miner name.
+        settings (MinerSettings): miner settings.
+        data (MinerData): miner data.
+    """
+
     name: str = DEFAULT_MINER_NAME
     settings: MinerSettings = MinerSettings()
     data: MinerData = MinerData()

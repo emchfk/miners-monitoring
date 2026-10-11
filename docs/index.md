@@ -5,6 +5,7 @@ miners on a local network.
 
 ## Documentation
 
+- [Manual](manual.md)
 - [API Reference](api.md)
 
 ## Build the documentation
