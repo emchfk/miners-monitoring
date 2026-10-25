@@ -1,6 +1,7 @@
 import asyncio
 
 from miners_monitoring.models.miner import Miner
+from miners_monitoring.services.api import get_system_info
 
 from .settings import Settings
 
@@ -26,6 +27,8 @@ async def _run() -> None:
         # system_response = await get_system_info(miner.settings.ip)
         # system_response = await post_restart(miner.settings.ip)
         # print(f"System response for {miner.name}: {system_response}")
+        miner.update_data(await get_system_info(miner.settings.ip))
+        print(f"Miner data for {miner.name}: {miner.data}")
     # END DEBUG
 
 
