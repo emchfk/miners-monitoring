@@ -1,6 +1,6 @@
 import asyncio
 
-from miners_monitoring.models.miner import Miner
+from miners_monitoring.models.miner import MinerInterface
 from miners_monitoring.services.api import get_system_info
 
 from .settings import Settings
@@ -15,15 +15,15 @@ async def _run() -> None:
 
     # Initialization of list of miners based on settings
     for miner_name, miner_settings in settings.miners.items():
-        miners.append(Miner(name=miner_name, settings=miner_settings))
+        miners.append(MinerInterface(name=miner_name, settings=miner_settings))
 
     # DEBUG
     for custom_call_name, custom_call_settings in settings.custom_calls.items():
         print(f"Custom call: {custom_call_name} ({custom_call_settings.crontab})")
         print(f"Sequence: {custom_call_settings.sequence}")
     for miner in miners:
-        print(miner.print_name("hello"))
-        print(miner.print_ip())
+        print(miner.settings.name)
+        print(miner.settings.ip)
         # system_response = await get_system_info(miner.settings.ip)
         # system_response = await post_restart(miner.settings.ip)
         # print(f"System response for {miner.name}: {system_response}")

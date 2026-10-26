@@ -1,8 +1,15 @@
+from datetime import UTC, datetime
 from ipaddress import IPv4Address
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, ValidationInfo, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    ValidationError,
+    ValidationInfo,
+    field_validator,
+)
 
 from miners_monitoring.config import dirs
 
@@ -30,14 +37,16 @@ class MinerSettings(BaseModel):
         model_config (ConfigDict): Configuration for the model.
         name (str): miner name.
         ip (str): miner IP address.
-        logs (str): path to the miner logs file.
+        logs_path (str): path to the miner logs file.
+        data_path (str): path to the miner data file.
     """
 
     model_config = ConfigDict(validate_default=True)
 
     name: str = ""
     ip: str = "192.168.1.100"
-    logs: str = ""
+    logs_path: str = ""
+    data_path: str = ""
 
     @field_validator("ip")
     def validate_ip(cls, v: str) -> str:
@@ -53,17 +62,26 @@ class MinerSettings(BaseModel):
             return DEFAULT_MINER_NAME
         return v
 
-    @field_validator("logs")
-    def default_logs(cls, v: str, info: ValidationInfo) -> str:
+    @field_validator("logs_path")
+    def default_logs_path(cls, v: str, info: ValidationInfo) -> str:
         if (not v) or (v == ""):
             return str(
                 Path(dirs.user_log_dir)
+                / f"{info.data.get('name', DEFAULT_MINER_NAME)}.txt"
+            )
+        return v
+
+    @field_validator("data_path")
+    def default_data_path(cls, v: str, info: ValidationInfo) -> str:
+        if (not v) or (v == ""):
+            return str(
+                Path(dirs.user_data_dir)
                 / f"{info.data.get('name', DEFAULT_MINER_NAME)}.json"
             )
         return v
 
 
-class Asic(BaseModel):
+class AsicData(BaseModel):
     """Todo.
 
     Todo details
@@ -81,7 +99,7 @@ class Asic(BaseModel):
     errorCount: int | None = None
 
 
-class HashrateMonitor(BaseModel):
+class HashrateMonitorData(BaseModel):
     """Todo.
 
     Todo details
@@ -89,10 +107,10 @@ class HashrateMonitor(BaseModel):
     Generated using <code>datamodel-codegen</code> with <code>--force-optional</code> option.
 
     Attributes:
-        asics (list[Asic] | None): List of ASICs monitored by the hashrate monitor.
+        asics (list[AsicData] | None): List of ASIC data objects monitored by the hashrate monitor.
     """
 
-    asics: list[Asic] | None = None
+    asics: list[AsicData] | None = None
 
 
 class MinerData(BaseModel):
@@ -178,7 +196,7 @@ class MinerData(BaseModel):
         blockHeight (int | None): Current block height of the miner.
         scriptsig (str | None): Script signature of the miner.
         networkDifficulty (int | None): Network difficulty of the miner.
-        hashrateMonitor (HashrateMonitor | None): Hashrate monitor data of the miner.
+        hashrateMonitor (HashrateMonitorData | None): Hashrate monitor data of the miner.
     """
 
     power: float | None = None
@@ -256,10 +274,10 @@ class MinerData(BaseModel):
     blockHeight: int | None = None
     scriptsig: str | None = None
     networkDifficulty: int | None = None
-    hashrateMonitor: HashrateMonitor | None = None
+    hashrateMonitor: HashrateMonitorData | None = None
 
 
-class Miner(BaseModel):
+class MinerInterface(BaseModel):
     """Todo.
 
     Todo details
@@ -274,15 +292,22 @@ class Miner(BaseModel):
     settings: MinerSettings = MinerSettings()
     data: MinerData = MinerData()
 
-    # DEBUGGING
     def update_data(self, json_data: str) -> None:
         """Update the miner's data with the provided JSON data."""
-        self.data = MinerData.model_validate(json_data)
+        try:
+            self.data = MinerData.model_validate(json_data)
+        except ValidationError as e:
+            # Generate ISO 8601 timestamp (ex: 2024-05-20 14:30:45.123456)
+            timestamp = datetime.now(UTC).isoformat(sep=" ", timespec="milliseconds")
+            self.log(f"[{timestamp}] Error updating miner data: {e}")
+            self.log(f"[{timestamp}] JSON data: {json_data}")
 
-    def print_name(self, msg: str) -> str:
-        return f"Miner: {self.settings.name} {msg}"
-
-    def print_ip(self) -> str:
-        return f"Miner: {self.settings.ip}"
-
-    # END DEBUGGING
+    def log(self, log_str: str) -> None:
+        """Print to miner's log at the specified settings path logs_path."""
+        try:
+            logs_path = Path(self.settings.logs_path)
+            logs_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(logs_path, "a", encoding="utf-8") as log_file:
+                log_file.write(log_str + "\n")
+        except (AttributeError, TypeError, PermissionError, OSError) as e:
+            print(f"Error: {e}")
