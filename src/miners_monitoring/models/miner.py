@@ -297,10 +297,8 @@ class MinerInterface(BaseModel):
         try:
             self.data = MinerData.model_validate(json_data)
         except ValidationError as e:
-            # Generate ISO 8601 timestamp (ex: 2024-05-20 14:30:45.123456)
-            timestamp = datetime.now(UTC).isoformat(sep=" ", timespec="milliseconds")
-            self.log(f"[{timestamp}] Error updating miner data: {e}")
-            self.log(f"[{timestamp}] JSON data: {json_data}")
+            self.log(f"Error updating miner data: {e}")
+            self.log(f"JSON data: {json_data}")
 
     def log(self, log_str: str) -> None:
         """Print to miner's log at the specified settings path logs_path."""
@@ -308,6 +306,10 @@ class MinerInterface(BaseModel):
             logs_path = Path(self.settings.logs_path)
             logs_path.parent.mkdir(parents=True, exist_ok=True)
             with open(logs_path, "a", encoding="utf-8") as log_file:
-                log_file.write(log_str + "\n")
+                # Generate ISO 8601 timestamp (ex: 2024-05-20 14:30:45.123456)
+                timestamp = datetime.now(UTC).isoformat(
+                    sep=" ", timespec="milliseconds"
+                )
+                log_file.write(f"[{timestamp}] {log_str}\n")
         except (AttributeError, TypeError, PermissionError, OSError) as e:
             print(f"Error: {e}")
