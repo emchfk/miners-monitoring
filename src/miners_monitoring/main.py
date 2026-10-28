@@ -24,10 +24,10 @@ async def _run() -> None:
     for miner in miners:
         print(miner.settings.name)
         print(miner.settings.ip)
-        # system_response = await get_system_info(miner.settings.ip)
-        # system_response = await post_restart(miner.settings.ip)
-        # print(f"System response for {miner.name}: {system_response}")
-        miner.update_data(await get_system_info(miner.settings.ip))
+        miner.update(await get_system_info(miner.settings.ip))
+        miner.save()
+        # print(f"Miner data for {miner.name}: {miner.data}")
+        # miner.load()
         print(f"Miner data for {miner.name}: {miner.data}")
     # END DEBUG
 

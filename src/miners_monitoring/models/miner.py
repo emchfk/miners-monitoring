@@ -292,12 +292,38 @@ class MinerInterface(BaseModel):
     settings: MinerSettings = MinerSettings()
     data: MinerData = MinerData()
 
-    def update_data(self, json_data: str) -> None:
+    def update(self, json_data: str) -> None:
         """Update the miner's data with the provided JSON data."""
         try:
             self.data = MinerData.model_validate(json_data)
         except ValidationError as e:
             self.log(f"Error updating miner data: {e}")
+            self.log(f"JSON data: {json_data}")
+
+    def save(self) -> None:
+        """Save the miner's data to the specified settings path data_path."""
+        try:
+            data_path = Path(self.settings.data_path)
+            data_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(data_path, "w", encoding="utf-8") as data_file:
+                data_file.write(self.data.model_dump_json(indent=4))
+        except (AttributeError, TypeError, PermissionError, OSError) as e:
+            self.log(f"Error saving miner data: {e}")
+
+    def load(self) -> None:
+        """Load the miner's data from the specified settings path data_path."""
+        try:
+            data_path = Path(self.settings.data_path)
+            if data_path.exists():
+                with open(data_path, "r", encoding="utf-8") as data_file:
+                    json_data = data_file.read()
+                    self.data = MinerData.model_validate_json(json_data)
+            else:
+                self.log(f"Data file not found: {data_path}")
+        except (AttributeError, TypeError, PermissionError, OSError) as e:
+            self.log(f"Error loading miner data: {e}")
+        except ValidationError as e:
+            self.log(f"Error validating miner data: {e}")
             self.log(f"JSON data: {json_data}")
 
     def log(self, log_str: str) -> None:
